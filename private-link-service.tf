@@ -37,7 +37,7 @@ resource "azurerm_subnet" "backend-subnet" {
   virtual_network_name = azurerm_virtual_network.privatelink-service-vnet.name
   address_prefixes       = ["172.16.1.0/25"]
 }
-resource "azurerm_subnet" "bastion-subnet" {
+resource "azurerm_subnet" "pls-bastion-subnet" {
   name                 = "AzureBastionSubnet"
  resource_group_name = azurerm_resource_group.privatelink-service-rg.name
   virtual_network_name = azurerm_virtual_network.privatelink-service-vnet.name
