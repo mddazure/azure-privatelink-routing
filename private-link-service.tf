@@ -67,8 +67,8 @@ resource "azurerm_public_ip" "bastion-pl-service-pubip" {
   sku                 = "Standard"
 }
 
-resource "azurerm_bastion_host" "bastion-ple" {
-  name                = "bastion-ple"
+resource "azurerm_bastion_host" "bastion-pl-service" {
+  name                = "bastion-pl-service"
   location            = var.location-privatelink-service
   resource_group_name = azurerm_resource_group.privatelink-service-rg.name
 
