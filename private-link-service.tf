@@ -258,10 +258,5 @@ resource "azurerm_private_link_service" "plsrv-1" {
     primary                    = true
   }
 
-  nat_ip_configuration {
-    name                       = "secondary"
-    private_ip_address_version = "IPv4"
-    subnet_id                  = azurerm_subnet.backend-subnet.id
-    primary                    = false
-  }
+
 }
