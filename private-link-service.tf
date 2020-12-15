@@ -37,7 +37,7 @@ resource "azurerm_subnet" "backend-subnet" {
   virtual_network_name = azurerm_virtual_network.privatelink-service-vnet.name
   address_prefixes       = ["172.16.1.0/25"]
 }
-resource "azurerm_subnet" "pls-bastion-subnet" {
+resource "azurerm_subnet" "pl-service" {
   name                 = "AzureBastionSubnet"
  resource_group_name = azurerm_resource_group.privatelink-service-rg.name
   virtual_network_name = azurerm_virtual_network.privatelink-service-vnet.name
@@ -55,6 +55,28 @@ resource "azurerm_subnet" "nat-subnet" {
   virtual_network_name = azurerm_virtual_network.privatelink-service-vnet.name
   address_prefixes       = ["172.16.1.176/28"]
   enforce_private_link_service_network_policies = true
+}
+#######################################################################
+## Create Bastion bastion-pl-service
+#######################################################################
+resource "azurerm_public_ip" "bastion-pl-service-pubip" {
+  name                = "bastion-pl-service-pubip"
+  location            = var.location-privatelink-service
+  resource_group_name = azurerm_resource_group.privatelink-service-rg.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
+resource "azurerm_bastion_host" "bastion-ple" {
+  name                = "bastion-ple"
+  location            = var.location-privatelink-service
+  resource_group_name = azurerm_resource_group.privatelink-service-rg.name
+
+  ip_configuration {
+    name                 = "bastion-ple-configuration"
+    subnet_id            = azurerm_subnet.pl-service.id
+    public_ip_address_id = azurerm_public_ip.bastion-pl-service-pubip.id
+  }
 }
 ##########################################################
 ## Install IIS role on backend-1-vm

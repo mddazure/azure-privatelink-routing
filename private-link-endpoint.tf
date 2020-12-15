@@ -103,6 +103,28 @@ resource "azurerm_windows_virtual_machine" "client-1-vm" {
   }
 }
 #######################################################################
+## Create Bastion bastion-ple
+#######################################################################
+resource "azurerm_public_ip" "bastion-ple-pubip" {
+  name                = "bastion-ple-pubip"
+  location              = var.location-privatelink-endpoint
+  resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
+resource "azurerm_bastion_host" "bastion-ple" {
+  name                = "bastion-ple"
+  location              = var.location-privatelink-endpoint
+  resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
+
+  ip_configuration {
+    name                 = "bastion-ple-configuration"
+    subnet_id            = azurerm_subnet.ple-bastion-subnet.id
+    public_ip_address_id = azurerm_public_ip.bastion-ple-pubip.id
+  }
+}
+#######################################################################
 ## Create Privatelink Endpoint ple-1
 #######################################################################
 resource "azurerm_private_endpoint" "ple-1"{
