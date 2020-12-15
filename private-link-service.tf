@@ -37,7 +37,7 @@ resource "azurerm_subnet" "backend-subnet" {
   virtual_network_name = azurerm_virtual_network.privatelink-service-vnet.name
   address_prefixes       = ["172.16.1.0/25"]
 }
-resource "azurerm_subnet" "pl-service" {
+resource "azurerm_subnet" "pls-bastion-subnet" {
   name                 = "AzureBastionSubnet"
  resource_group_name = azurerm_resource_group.privatelink-service-rg.name
   virtual_network_name = azurerm_virtual_network.privatelink-service-vnet.name
@@ -57,25 +57,25 @@ resource "azurerm_subnet" "nat-subnet" {
   enforce_private_link_service_network_policies = true
 }
 #######################################################################
-## Create Bastion bastion-pl-service
+## Create Bastion bastion-pls
 #######################################################################
-resource "azurerm_public_ip" "bastion-pl-service-pubip" {
-  name                = "bastion-pl-service-pubip"
+resource "azurerm_public_ip" "bastion-pls-pubip" {
+  name                = "bastion-pls-pubip"
   location            = var.location-privatelink-service
   resource_group_name = azurerm_resource_group.privatelink-service-rg.name
   allocation_method   = "Static"
   sku                 = "Standard"
 }
 
-resource "azurerm_bastion_host" "bastion-pl-service" {
-  name                = "bastion-pl-service"
+resource "azurerm_bastion_host" "bastion-pls" {
+  name                = "bastion-pls"
   location            = var.location-privatelink-service
   resource_group_name = azurerm_resource_group.privatelink-service-rg.name
 
   ip_configuration {
-    name                 = "bastion-ple-configuration"
-    subnet_id            = azurerm_subnet.pl-service.id
-    public_ip_address_id = azurerm_public_ip.bastion-pl-service-pubip.id
+    name                 = "bastion-pls-configuration"
+    subnet_id            = azurerm_subnet.pls-bastion-subnet.id
+    public_ip_address_id = azurerm_public_ip.bastion-pls-pubip.id
   }
 }
 ##########################################################
