@@ -111,7 +111,7 @@ resource "azurerm_private_endpoint" "ple-1"{
   subnet_id             = azurerm_subnet.ple-subnet.id
   private_service_connection {
     name                           = "ple-1-privateserviceconnection"
-    private_connection_resource_id = azurerm_private_link_service.example.id
+    private_connection_resource_id = azurerm_private_link_service.plsrv-1.id
     is_manual_connection           = false
   }
 
