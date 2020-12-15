@@ -246,7 +246,7 @@ resource "azurerm_private_link_service" "plsrv-1" {
   location              = var.location-privatelink-service
 
   auto_approval_subscription_ids              = ["0245be41-c89b-4b46-a3cc-a705c90cd1e8"]
-  auto_approval_subscription_ids              = ["0245be41-c89b-4b46-a3cc-a705c90cd1e8"]
+  visibility_subscription_ids               = ["0245be41-c89b-4b46-a3cc-a705c90cd1e8"]
   load_balancer_frontend_ip_configuration_ids = [azurerm_lb.lb-1.frontend_ip_configuration.0.id]
 
     nat_ip_configuration {
