@@ -46,6 +46,7 @@ resource "azurerm_subnet" "ple-subnet" {
  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
   virtual_network_name = azurerm_virtual_network.privatelink-endpoint-vnet.name
   address_prefixes       = ["192.168.0.128/27"]
+  enforce_private_link_service_network_policies = true
 }
 #######################################################################
 ## Create Network Interface - client-1-nic
