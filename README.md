@@ -1,4 +1,4 @@
 # **Routing in Azure Private Link**
 
-![image](images/azure-privatelink-routing.jpg)
+![image](images/azure-privatelink-routing.png)
 
