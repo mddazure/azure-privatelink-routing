@@ -202,7 +202,7 @@ resource "azurerm_lb" "lb-1" {
   location              = var.location-privatelink-service
 
   frontend_ip_configuration {
-    type =  "private"
+  
     name                 = "lb-1-frontend-ipconfig"
     private_ip_address = "172.16.1.164"
     private_ip_address_allocation = "Static"
