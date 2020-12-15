@@ -198,11 +198,11 @@ resource "azurerm_network_interface" "backend-2-nic" {
 resource "azurerm_lb" "lb-1" {
   name                = "lb-1"
   sku                 = "Standard"
-  type =  "private"
-  resource_group_name   = azurerm_resource_group.privatelink-service-rg.name
+    resource_group_name   = azurerm_resource_group.privatelink-service-rg.name
   location              = var.location-privatelink-service
 
   frontend_ip_configuration {
+    type =  "private"
     name                 = "lb-1-frontend-ipconfig"
     private_ip_address = "172.16.1.164"
     private_ip_address_allocation = "Static"
