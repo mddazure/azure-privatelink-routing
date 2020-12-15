@@ -253,17 +253,15 @@ resource "azurerm_private_link_service" "plsrv-1" {
 
     nat_ip_configuration {
     name                       = "primary"
-    private_ip_address         = "172.16.1.173"
     private_ip_address_version = "IPv4"
-    subnet_id                  = azurerm_subnet.frontend-subnet.id
+    subnet_id                  = azurerm_subnet.backend-subnet.id
     primary                    = true
   }
 
   nat_ip_configuration {
     name                       = "secondary"
-    private_ip_address         = "172.16.1.173"
     private_ip_address_version = "IPv4"
-    subnet_id                  = azurerm_subnet.frontend-subnet.id
+    subnet_id                  = azurerm_subnet.backend-subnet.id
     primary                    = false
   }
 }

@@ -39,7 +39,7 @@ resource "azurerm_subnet" "ple-bastion-subnet" {
   name                 = "AzureBastionSubnet"
  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
   virtual_network_name = azurerm_virtual_network.privatelink-endpoint-vnet.name
-  address_prefixes       = ["192.168.0.128/27"]
+  address_prefixes       = ["192.168.0.160/27"]
 }
 resource "azurerm_subnet" "ple-subnet" {
   name                 = "privatelink-endpoint-subnet"
