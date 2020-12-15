@@ -53,7 +53,7 @@ resource "azurerm_subnet" "nat-subnet" {
   name                 = "natSubnet"
  resource_group_name = azurerm_resource_group.privatelink-service-rg.name
   virtual_network_name = azurerm_virtual_network.privatelink-service-vnet.name
-  address_prefixes       = ["172.16.1.175/28"]
+  address_prefixes       = ["172.16.1.176/28"]
 }
 ##########################################################
 ## Install IIS role on backend-1-vm
