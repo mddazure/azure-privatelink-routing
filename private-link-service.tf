@@ -237,3 +237,31 @@ resource "azurerm_lb_probe" "lb-1-probe" {
   name                = "http-running-probe"
   port                = 80
 }
+#######################################################################
+## Create Privatelink Service plsrv-1
+#######################################################################
+resource "azurerm_private_link_service" "plsrv-1" {
+  name                  = "plsrv-1"
+  resource_group_name   = azurerm_resource_group.privatelink-service-rg.name
+  location              = var.location-privatelink-service
+
+  auto_approval_subscription_ids              = ["0245be41-c89b-4b46-a3cc-a705c90cd1e8"]
+  auto_approval_subscription_ids              = ["0245be41-c89b-4b46-a3cc-a705c90cd1e8"]
+  load_balancer_frontend_ip_configuration_ids = [azurerm_lb.lb-1.frontend_ip_configuration.0.id]
+
+    nat_ip_configuration {
+    name                       = "primary"
+    private_ip_address         = "172.16.1.173"
+    private_ip_address_version = "IPv4"
+    subnet_id                  = azurerm_subnet.frontend-subnet.id
+    primary                    = true
+  }
+
+  nat_ip_configuration {
+    name                       = "secondary"
+    private_ip_address         = "172.16.1.173"
+    private_ip_address_version = "IPv4"
+    subnet_id                  = azurerm_subnet.frontend-subnet.id
+    primary                    = false
+  }
+}
