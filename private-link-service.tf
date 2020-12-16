@@ -261,6 +261,8 @@ resource "azurerm_lb_rule" "lb-1-rule1" {
   frontend_port                  = 80
   backend_port                   = 80
   frontend_ip_configuration_name = "lb-1-frontend-ipconfig"
+  backend_address_pool_id        = azurerm_lb_backend_address_pool.lb-1-bepool.id
+  probe_id                       = azurerm_lb_probe.lb-1-probe.id
 }
 resource "azurerm_lb_probe" "lb-1-probe" {
   resource_group_name   = azurerm_resource_group.privatelink-service-rg.name
