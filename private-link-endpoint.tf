@@ -37,7 +37,14 @@ resource "azurerm_route_table" "udr-ple-via-fw" {
 
   route {
     name           = "route1"
-    address_prefix = "192.168.0.128/27"
+    address_prefix = "192.168.0.132"
+    next_hop_type  = "VirtualAppliance"
+    next_hop_in_ip_address = azurerm_firewall.privatelink-firewall.ip_configuration[0].private_ip_address
+  }
+
+    route {
+    name           = "route2"
+    address_prefix = "192.168.0.133"
     next_hop_type  = "VirtualAppliance"
     next_hop_in_ip_address = azurerm_firewall.privatelink-firewall.ip_configuration[0].private_ip_address
   }
@@ -48,7 +55,6 @@ resource "azurerm_route_table" "udr-ple-via-fw" {
     microhack    = "privatelink-routing"
   }
 }
-
 #######################################################################
 ## Create Subnets - privatelink-endpoint
 #######################################################################
@@ -57,6 +63,11 @@ resource "azurerm_subnet" "vm-subnet" {
   resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
   virtual_network_name = azurerm_virtual_network.privatelink-endpoint-vnet.name
   address_prefixes       = ["192.168.0.0/25"]
+  
+}
+resource "azurerm_subnet_route_table_association" "vm-subnet-via-fw" {
+  subnet_id      = azurerm_subnet.vm-subnet.id
+  route_table_id = azurerm_route_table.udr-ple-via-fw.id
 }
 resource "azurerm_subnet" "ple-bastion-subnet" {
   name                 = "AzureBastionSubnet"
