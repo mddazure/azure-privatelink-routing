@@ -56,22 +56,23 @@ resource "azurerm_firewall" "privatelink-firewall" {
  location            = var.location-privatelink-firewall
   resource_group_name = azurerm_resource_group.privatelink-firewall-rg.name
 
-  ip_configuration {
-    name                 = "fw_in_fw-vnet"
-    subnet_id            = azurerm_subnet.fw-subnet.id
+#  ip_configuration {
+#    name                 = "fw_in_fw-vnet"
+#    subnet_id            = azurerm_subnet.fw-subnet.id
+#    public_ip_address_id = azurerm_public_ip.fw-pubip.id
+#  }
+ ip_configuration {
+    name                 = "fw_in_ple-vnet"
+    subnet_id            = azurerm_subnet.fw-ple-subnet.id
     public_ip_address_id = azurerm_public_ip.fw-pubip.id
-  }
+ }
    tags = {
     environment = "pl-firewall"
     deployment  = "terraform"
     microhack    = "privatelink-routing"
   }
 }
-#  ip_configuration {
-#    name                 = "fw_in_ple-vnet"
-#    subnet_id            = azurerm_subnet.fw-ple-subnet.id
-#    public_ip_address_id = azurerm_public_ip.fw-pubip.id
-# }
+
 
 resource "azurerm_firewall_network_rule_collection" "netw-rule-coll-1" {
   name                = "netw-rule-coll-1"
