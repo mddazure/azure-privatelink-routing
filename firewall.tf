@@ -100,10 +100,5 @@ resource "azurerm_firewall_network_rule_collection" "netw-rule-coll-1" {
       "UDP",
     ]
   }
-   tags = {
-    environment = "pl-firewall"
-    deployment  = "terraform"
-    microhack    = "privatelink-routing"
-  }
 }
 
