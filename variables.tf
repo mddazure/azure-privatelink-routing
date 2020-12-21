@@ -8,6 +8,11 @@ variable "location-privatelink-endpoint" {
   type        = string
   default     = "NorthEurope"
 }
+variable "location-privatelink-firewall" {
+  description = "Location to deploy firewall"
+  type        = string
+  default     = "NorthEurope"
+}
 variable "username" {
   description = "Username for Virtual Machines"
   type        = string

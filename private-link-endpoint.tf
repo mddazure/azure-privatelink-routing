@@ -27,6 +27,29 @@ resource "azurerm_virtual_network" "privatelink-endpoint-vnet" {
   }
 }
 #######################################################################
+## Create Route Table - udr-ple-via-fw
+#######################################################################
+resource "azurerm_route_table" "udr-ple-via-fw" {
+  name                          = "udr-ple-via-fw"
+  location            = var.location-privatelink-endpoint
+  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
+  disable_bgp_route_propagation = false
+
+  route {
+    name           = "route1"
+    address_prefix = "192.168.0.128/27"
+    next_hop_type  = "VirtualAppliance"
+    next_hop_in_ip_address = azurerm_firewall.privatelink-firewall.ip_configuration[0].private_ip_address
+  }
+
+ tags = {
+    environment = "pl-endpoint"
+    deployment  = "terraform"
+    microhack    = "privatelink-routing"
+  }
+}
+
+#######################################################################
 ## Create Subnets - privatelink-endpoint
 #######################################################################
 resource "azurerm_subnet" "vm-subnet" {
@@ -46,6 +69,13 @@ resource "azurerm_subnet" "ple-subnet" {
  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
   virtual_network_name = azurerm_virtual_network.privatelink-endpoint-vnet.name
   address_prefixes       = ["192.168.0.128/27"]
+  enforce_private_link_endpoint_network_policies = true
+}
+resource "azurerm_subnet" "fw-ple-subnet" {
+  name                 = "AzureFirewallSubnet"
+ resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
+  virtual_network_name = azurerm_virtual_network.privatelink-endpoint-vnet.name
+  address_prefixes       = ["192.168.0.192/26"]
   enforce_private_link_endpoint_network_policies = true
 }
 #######################################################################
