@@ -1,23 +1,10 @@
 #######################################################################
-## Create Resource Group
-#######################################################################
-
-resource "azurerm_resource_group" "privatelink-firewall-rg" {
-  name     = "privatelink-firewall-rg"
-  location = var.location-privatelink-firewall
- tags = {
-    environment = "pl-firewall"
-    deployment  = "terraform"
-    microhack   = "privatelink-routing"
-  }
-}
-#######################################################################
 ## Create Virtual Network - privatelink-firewall
 #######################################################################
 resource "azurerm_virtual_network" "privatelink-firewall-vnet" {
   name                = "privatelink-firewall-vnet"
   location            = var.location-privatelink-firewall
-  resource_group_name = azurerm_resource_group.privatelink-firewall-rg.name
+  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
   address_space       = ["192.168.100.0/24"]
 
  tags = {
@@ -31,13 +18,13 @@ resource "azurerm_virtual_network" "privatelink-firewall-vnet" {
 #######################################################################
 resource "azurerm_subnet" "fw-subnet" {
   name                 = "AzureFirewallSubnet"
-  resource_group_name = azurerm_resource_group.privatelink-firewall-rg.name
+  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
   virtual_network_name = azurerm_virtual_network.privatelink-firewall-vnet.name
   address_prefixes       = ["192.168.100.0/26"]
 }
 resource "azurerm_subnet" "fw-mgmt-subnet" {
   name                 = "AzureFirewallManagementSubnet"
- resource_group_name = azurerm_resource_group.privatelink-firewall-rg.name
+ resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
   virtual_network_name = azurerm_virtual_network.privatelink-firewall-vnet.name
   address_prefixes       = ["192.168.100.64/26"]
 }
@@ -47,14 +34,14 @@ resource "azurerm_subnet" "fw-mgmt-subnet" {
 resource "azurerm_public_ip" "fw-pubip" {
   name                = "fw-pubip"
   location              = var.location-privatelink-firewall
-  resource_group_name   = azurerm_resource_group.privatelink-firewall-rg.name
+  resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
   allocation_method   = "Static"
   sku                 = "Standard"
 }
 resource "azurerm_firewall" "privatelink-firewall" {
   name                = "privatelink-firewall"
  location            = var.location-privatelink-firewall
-  resource_group_name = azurerm_resource_group.privatelink-firewall-rg.name
+  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
 
 #  ip_configuration {
 #    name                 = "fw_in_fw-vnet"
@@ -77,7 +64,7 @@ resource "azurerm_firewall" "privatelink-firewall" {
 resource "azurerm_firewall_network_rule_collection" "netw-rule-coll-1" {
   name                = "netw-rule-coll-1"
   azure_firewall_name = azurerm_firewall.privatelink-firewall.name
-  resource_group_name = azurerm_resource_group.privatelink-firewall-rg.name
+  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
   priority            = 100
   action              = "Allow"
 
