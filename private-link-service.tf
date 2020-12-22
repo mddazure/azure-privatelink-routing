@@ -288,6 +288,26 @@ resource "azurerm_private_link_service" "plsrv-1" {
     subnet_id                  = azurerm_subnet.nat-subnet.id
     primary                    = true
   }
+}
+#######################################################################
+## Create Storage privatelink-blob
+#######################################################################
+resource "azurerm_storage_account" "privatelink-blob-mdd" {
+  name                = "privatelink-blob-mdd"
+  resource_group_name = azurerm_resource_group.privatelink-service-rg.name
 
-
+  location                 = var.location-privatelink-service
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  
+ tags = {
+    environment = "pl-service"
+    deployment  = "terraform"
+    microhack    = "privatelink-routing"
+  }
+}
+resource "azurerm_storage_container" "content" {
+  name                  = "content"
+  storage_account_name  = azurerm_storage_account.privatelink-blob-mdd.name
+  container_access_type = "container"
 }

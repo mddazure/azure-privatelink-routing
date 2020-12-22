@@ -1,92 +1,82 @@
-#######################################################################
-## Create Virtual Network - privatelink-firewall
-#######################################################################
-resource "azurerm_virtual_network" "privatelink-firewall-vnet" {
-  name                = "privatelink-firewall-vnet"
-  location            = var.location-privatelink-firewall
-  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
-  address_space       = ["192.168.100.0/24"]
 
- tags = {
-    environment = "pl-firewall"
-    deployment  = "terraform"
-    microhack    = "privatelink-routing"
-  }
-}
 #######################################################################
-## Create Subnets - firewall
+## Create Firewall-1
 #######################################################################
-resource "azurerm_subnet" "fw-subnet" {
-  name                 = "AzureFirewallSubnet"
-  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
-  virtual_network_name = azurerm_virtual_network.privatelink-firewall-vnet.name
-  address_prefixes       = ["192.168.100.0/26"]
-}
-resource "azurerm_subnet" "fw-mgmt-subnet" {
-  name                 = "AzureFirewallManagementSubnet"
- resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
-  virtual_network_name = azurerm_virtual_network.privatelink-firewall-vnet.name
-  address_prefixes       = ["192.168.100.64/26"]
-}
-#######################################################################
-## Create Firewall
-#######################################################################
-resource "azurerm_public_ip" "fw-pubip" {
-  name                = "fw-pubip"
-  location              = var.location-privatelink-firewall
+resource "azurerm_public_ip" "fw-1-pubip" {
+  name                = "fw-1-pubip"
+  location              = var.location-privatelink-endpoint
   resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
   allocation_method   = "Static"
   sku                 = "Standard"
 }
-resource "azurerm_firewall" "privatelink-firewall" {
-  name                = "privatelink-firewall"
- location            = var.location-privatelink-firewall
+resource "azurerm_firewall" "privatelink-firewall-1" {
+  name                = "privatelink-firewall-1"
+  location            = var.location-privatelink-endpoint
   resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
 
-#  ip_configuration {
-#    name                 = "fw_in_fw-vnet"
-#    subnet_id            = azurerm_subnet.fw-subnet.id
-#    public_ip_address_id = azurerm_public_ip.fw-pubip.id
-#  }
- ip_configuration {
-    name                 = "fw_in_ple-vnet"
-    subnet_id            = azurerm_subnet.fw-ple-subnet.id
-    public_ip_address_id = azurerm_public_ip.fw-pubip.id
- }
+  ip_configuration {
+    name                 = "fw-1-ipconfig"
+    subnet_id            = azurerm_subnet.fw-1-ple-subnet.id
+    public_ip_address_id = azurerm_public_ip.fw-1-pubip.id
+  }
+   firewall_policy_id   =  azurerm_firewall_policy.privatelink-firewall-policy.id
+
    tags = {
-    environment = "pl-firewall"
+    environment = "pl-firewall-1"
     deployment  = "terraform"
     microhack    = "privatelink-routing"
   }
 }
-
-
-resource "azurerm_firewall_network_rule_collection" "netw-rule-coll-1" {
-  name                = "netw-rule-coll-1"
-  azure_firewall_name = azurerm_firewall.privatelink-firewall.name
+#######################################################################
+## Create Firewall-2
+#######################################################################
+resource "azurerm_public_ip" "fw-2-pubip" {
+  name                = "fw-2-pubip"
+  location              = var.location-privatelink-endpoint
+  resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+resource "azurerm_firewall" "privatelink-firewall-2" {
+  name                = "privatelink-firewall-2"
+  location            = var.location-privatelink-endpoint
   resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
+
+  ip_configuration {
+    name                 = "fw-2-ipconfig"
+    subnet_id            = azurerm_subnet.fw-2-ple-subnet.id
+    public_ip_address_id = azurerm_public_ip.fw-pubip.id
+  }
+  firewall_policy_id   =  azurerm_firewall_policy.privatelink-firewall-policy.id
+   tags = {
+    environment = "pl-firewall-1"
+    deployment  = "terraform"
+    microhack    = "privatelink-routing"
+  }
+}
+#######################################################################
+## Create Firewall Policy
+#######################################################################
+resource "azurerm_firewall_policy" "privatelink-firewall-policy" {
+  name                = "privatelink-firewall-policy"
+  location              = var.location-privatelink-endpoint
+  resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
+}
+
+resource "azurerm_firewall_policy_rule_collection_group" "privatelink-firewall-policy-rule-group" {
+  name                  = "privatelink-firewall-policy-rule-group"
+  firewall_policy_id    = azurerm_firewall_policy.privatelink-firewall-policy.id
   priority            = 100
-  action              = "Allow"
-
-  rule {
-    name = "ple-allow"
-
-    source_addresses = [
-      "192.168.0.0/25",
-    ]
-
-    destination_ports = [
-      "*",
-    ]
-
-    destination_addresses = [
-      "192.168.0.128/27",
-    ]
-
-    protocols = [
-      "TCP",
-      "UDP",
-    ]
+  network_rule_collection {
+    name        = "netw-rule-coll-1"
+    action      = "Allow"
+    priority    = 500
+    rule {
+        name        = "ple-allow"    
+        source_addresses = ["192.168.0.0/25"]
+        destination_ports = ["*"]
+        destination_addresses = ["192.168.0.128/27","192.168.100.128/27","192.168.200.128/27"]
+        protocols = ["TCP","UDP"]
   }
 }
 

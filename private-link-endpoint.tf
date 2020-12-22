@@ -12,16 +12,16 @@ resource "azurerm_resource_group" "privatelink-endpoint-rg" {
   }
 }
 #######################################################################
-## Create Virtual Network - privatelink-endpoint
+## Create Virtual Network - privatelink-endpoint-source
 #######################################################################
-resource "azurerm_virtual_network" "privatelink-endpoint-vnet" {
-  name                = "privatelink-endpoint-vnet"
+resource "azurerm_virtual_network" "privatelink-endpoint-source-vnet" {
+  name                = "privatelink-endpoint-source-vnet"
   location            = var.location-privatelink-endpoint
   resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
   address_space       = ["192.168.0.0/24"]
 
  tags = {
-    environment = "pl-endpoint"
+    environment = "pl-endpoint-source"
     deployment  = "terraform"
     microhack    = "privatelink-routing"
   }
@@ -48,9 +48,22 @@ resource "azurerm_route_table" "udr-ple-via-fw" {
     next_hop_type  = "VirtualAppliance"
     next_hop_in_ip_address = azurerm_firewall.privatelink-firewall.ip_configuration[0].private_ip_address
   }
+    route {
+    name           = "route3"
+    address_prefix = "192.168.100.132/32"
+    next_hop_type  = "VirtualAppliance"
+    next_hop_in_ip_address = azurerm_firewall.privatelink-firewall-2.ip_configuration[0].private_ip_address
+  }
+
+    route {
+    name           = "route4"
+    address_prefix = "192.168.100.133/32"
+    next_hop_type  = "VirtualAppliance"
+    next_hop_in_ip_address = azurerm_firewall.privatelink-firewall-2.ip_configuration[0].private_ip_address
+  }
 
  tags = {
-    environment = "pl-endpoint"
+    environment = "pl-endpoint-source"
     deployment  = "terraform"
     microhack    = "privatelink-routing"
   }
@@ -61,7 +74,7 @@ resource "azurerm_route_table" "udr-ple-via-fw" {
 resource "azurerm_subnet" "vm-subnet" {
   name                 = "vmSubnet"
   resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
-  virtual_network_name = azurerm_virtual_network.privatelink-endpoint-vnet.name
+  virtual_network_name = azurerm_virtual_network.privatelink-endpoint-source-vnet.name
   address_prefixes       = ["192.168.0.0/25"]
   
 }
@@ -75,18 +88,75 @@ resource "azurerm_subnet" "ple-bastion-subnet" {
   virtual_network_name = azurerm_virtual_network.privatelink-endpoint-vnet.name
   address_prefixes       = ["192.168.0.160/27"]
 }
-resource "azurerm_subnet" "ple-subnet" {
-  name                 = "privatelink-endpoint-subnet"
+resource "azurerm_subnet" "privatelink-endpoint-source-subnet" {
+  name                 = "privatelink-endpoint-source-subnet"
  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
   virtual_network_name = azurerm_virtual_network.privatelink-endpoint-vnet.name
   address_prefixes       = ["192.168.0.128/27"]
   enforce_private_link_endpoint_network_policies = true
 }
-resource "azurerm_subnet" "fw-ple-subnet" {
+resource "azurerm_subnet" "fw-1-ple-subnet" {
   name                 = "AzureFirewallSubnet"
  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
   virtual_network_name = azurerm_virtual_network.privatelink-endpoint-vnet.name
   address_prefixes       = ["192.168.0.192/26"]
+  enforce_private_link_endpoint_network_policies = true
+}
+#######################################################################
+## Create Virtual Network - privatelink-endpoint-fw-vnet
+#######################################################################
+resource "azurerm_virtual_network" "privatelink-endpoint-fw-vnet" {
+  name                = "privatelink-endpoint-fw-vnet"
+  location            = var.location-privatelink-endpoint
+  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
+  address_space       = ["192.168.100.0/24"]
+
+ tags = {
+    environment = "pl-endpoint-fw"
+    deployment  = "terraform"
+    microhack    = "privatelink-routing"
+  }
+}
+#######################################################################
+## Create Subnets - privatelink-endpoint-fw-vnet
+#######################################################################
+resource "azurerm_subnet" "ple-fw-subnet" {
+  name                 = "privatelink-endpoint-fw-subnet"
+ resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
+  virtual_network_name = azurerm_virtual_network.privatelink-endpoint-fw-vnet.name
+  address_prefixes       = ["192.168.100.128/27"]
+  enforce_private_link_endpoint_network_policies = true
+}
+resource "azurerm_subnet" "fw-2-ple-subnet" {
+  name                 = "AzureFirewallSubnet"
+ resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
+  virtual_network_name = azurerm_virtual_network.privatelink-endpoint-fw-vnet.name
+  address_prefixes       = ["192.168.100.192/26"]
+  enforce_private_link_endpoint_network_policies = true
+}
+#######################################################################
+## Create Virtual Network - privatelink-endpoint-only-vnet
+#######################################################################
+resource "azurerm_virtual_network" "privatelink-endpoint-only-vnet" {
+  name                = "privatelink-endpoint-only-vnet"
+  location            = var.location-privatelink-endpoint
+  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
+  address_space       = ["192.168.200.0/24"]
+
+ tags = {
+    environment = "pl-endpoint-only"
+    deployment  = "terraform"
+    microhack    = "privatelink-routing"
+  }
+}
+#######################################################################
+## Create Subnets - privatelink-endpoint-only-vnet
+#######################################################################
+resource "azurerm_subnet" "ple-fw-subnet" {
+  name                 = "privatelink-endpoint-only-subnet"
+ resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
+  virtual_network_name = azurerm_virtual_network.privatelink-endpoint-only-vnet.name
+  address_prefixes       = ["192.168.200.128/27"]
   enforce_private_link_endpoint_network_policies = true
 }
 #######################################################################
@@ -172,11 +242,83 @@ resource "azurerm_private_endpoint" "ple-1"{
   name                  = "ple-1"
   location              = var.location-privatelink-endpoint
   resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
-  subnet_id             = azurerm_subnet.ple-subnet.id
+  subnet_id             = azurerm_subnet.privatelink-endpoint-source-subnet.id
   private_service_connection {
     name                           = "ple-1-privateserviceconnection"
     private_connection_resource_id = azurerm_private_link_service.plsrv-1.id
     is_manual_connection           = false
   }
-
+}
+#######################################################################
+## Create Privatelink Endpoint ple-2
+#######################################################################
+resource "azurerm_private_endpoint" "ple-2"{
+  name                  = "ple-1"
+  location              = var.location-privatelink-endpoint
+  resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
+  subnet_id             = azurerm_subnet.privatelink-endpoint-source-subnet.id
+  private_service_connection {
+    name                           = "ple-2-privateserviceconnection"
+    private_connection_resource_id = azurerm_storage_account.privatelink-blob-mdd.id
+    subresource_names              = "blob_secondary"
+    is_manual_connection           = false
+  }
+}
+#######################################################################
+## Create Privatelink Endpoint ple-3
+#######################################################################
+resource "azurerm_private_endpoint" "ple-3"{
+  name                  = "ple-3"
+  location              = var.location-privatelink-endpoint
+  resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
+  subnet_id             = azurerm_subnet.privatelink-endpoint-fw-subnet.id
+  private_service_connection {
+    name                           = "ple-3-privateserviceconnection"
+    private_connection_resource_id = azurerm_private_link_service.plsrv-1.id
+    is_manual_connection           = false
+  }
+}
+#######################################################################
+## Create Privatelink Endpoint ple-4
+#######################################################################
+resource "azurerm_private_endpoint" "ple-4"{
+  name                  = "ple-4"
+  location              = var.location-privatelink-endpoint
+  resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
+  subnet_id             = azurerm_subnet.privatelink-endpoint-fw-subnet.id
+  private_service_connection {
+    name                           = "ple-4-privateserviceconnection"
+    private_connection_resource_id = azurerm_storage_account.privatelink-blob-mdd.id
+    subresource_names              = "blob_secondary"
+    is_manual_connection           = false
+  }
+}
+#######################################################################
+## Create Privatelink Endpoint ple-5
+#######################################################################
+resource "azurerm_private_endpoint" "ple-5"{
+  name                  = "ple-3"
+  location              = var.location-privatelink-endpoint
+  resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
+  subnet_id             = azurerm_subnet.privatelink-endpoint-only-subnet.id
+  private_service_connection {
+    name                           = "ple-5-privateserviceconnection"
+    private_connection_resource_id = azurerm_private_link_service.plsrv-1.id
+    is_manual_connection           = false
+  }
+}
+#######################################################################
+## Create Privatelink Endpoint ple-6
+#######################################################################
+resource "azurerm_private_endpoint" "ple-6"{
+  name                  = "ple-4"
+  location              = var.location-privatelink-endpoint
+  resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
+  subnet_id             = azurerm_subnet.privatelink-endpoint-only-subnet.id
+  private_service_connection {
+    name                           = "ple-6-privateserviceconnection"
+    private_connection_resource_id = azurerm_storage_account.privatelink-blob-mdd.id
+    subresource_names              = "blob_secondary"
+    is_manual_connection           = false
+  }
 }
