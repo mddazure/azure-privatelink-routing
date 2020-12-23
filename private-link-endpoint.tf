@@ -265,7 +265,7 @@ resource "azurerm_private_endpoint" "ple-1"{
 ## Create Privatelink Endpoint ple-2
 #######################################################################
 resource "azurerm_private_endpoint" "ple-2"{
-  name                  = "ple-1"
+  name                  = "ple-2"
   location              = var.location-privatelink-endpoint
   resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
   subnet_id             = azurerm_subnet.privatelink-endpoint-source-subnet.id

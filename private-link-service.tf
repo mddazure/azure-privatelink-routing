@@ -321,10 +321,9 @@ resource "azurerm_private_link_service" "plsrv-1" {
 #######################################################################
 resource "random_string" "st-acc"{
   length = 12
+  upper = false
   special = false
 }
-
-
 resource "azurerm_storage_account" "privatelink-blob-mdd" {
   name                = random_string.st-acc.result
   resource_group_name = azurerm_resource_group.privatelink-service-rg.name
