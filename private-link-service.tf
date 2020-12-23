@@ -341,5 +341,5 @@ resource "azurerm_storage_account" "privatelink-blob-mdd" {
 resource "azurerm_storage_container" "content" {
   name                  = "content"
   storage_account_name  = azurerm_storage_account.privatelink-blob-mdd.name
-  container_access_type = "container"
+  container_access_type = "blob"
 }
