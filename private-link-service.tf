@@ -45,7 +45,6 @@ resource "azurerm_nat_gateway" "natGW" {
   sku_name                = "Standard"
 }
 resource "azurerm_nat_gateway_public_ip_association" "natGW-pubip-ass"{
-   name                 = "natGW-pubip-ass"
    nat_gateway_id       = azurerm_nat_gateway.natGW.id
    public_ip_address_id = azurerm_public_ip.natGW-pubip.id
 }
