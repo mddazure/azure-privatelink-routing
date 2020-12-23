@@ -152,7 +152,7 @@ resource "azurerm_virtual_network" "privatelink-endpoint-only-vnet" {
 #######################################################################
 ## Create Subnets - privatelink-endpoint-only-vnet
 #######################################################################
-resource "azurerm_subnet" "ple-fw-subnet" {
+resource "azurerm_subnet" "ple-fw-only-subnet" {
   name                 = "privatelink-endpoint-only-subnet"
  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
   virtual_network_name = azurerm_virtual_network.privatelink-endpoint-only-vnet.name
