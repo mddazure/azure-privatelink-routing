@@ -356,14 +356,14 @@ resource "azurerm_virtual_network_peering" "fw-source-peer" {
 ## Peer fw-vnet ple-only-vnet
 #######################################################################
 resource "azurerm_virtual_network_peering" "only-fw-peer" {
-  name                      = "source-fw-peer"
+  name                      = "only-fw-peer"
   resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
   virtual_network_name      = azurerm_virtual_network.privatelink-endpoint-only-vnet.name
   remote_virtual_network_id = azurerm_virtual_network.privatelink-endpoint-fw-vnet.id
   allow_forwarded_traffic = true
 }
 resource "azurerm_virtual_network_peering" "fw-only-peer" {
-  name                      = "fw-source-peer"
+  name                      = "fw-only-peer"
   resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
   virtual_network_name      = azurerm_virtual_network.privatelink-endpoint-fw-vnet.name
   remote_virtual_network_id = azurerm_virtual_network.privatelink-endpoint-only-vnet.id
