@@ -39,14 +39,14 @@ resource "azurerm_route_table" "udr-ple-via-fw" {
     name           = "route1"
     address_prefix = "192.168.0.132/32"
     next_hop_type  = "VirtualAppliance"
-    next_hop_in_ip_address = azurerm_firewall.privatelink-firewall.ip_configuration[0].private_ip_address
+    next_hop_in_ip_address = azurerm_firewall.privatelink-firewall-1.ip_configuration[0].private_ip_address
   }
 
     route {
     name           = "route2"
     address_prefix = "192.168.0.133/32"
     next_hop_type  = "VirtualAppliance"
-    next_hop_in_ip_address = azurerm_firewall.privatelink-firewall.ip_configuration[0].private_ip_address
+    next_hop_in_ip_address = azurerm_firewall.privatelink-firewall-1.ip_configuration[0].private_ip_address
   }
     route {
     name           = "route3"
@@ -61,7 +61,19 @@ resource "azurerm_route_table" "udr-ple-via-fw" {
     next_hop_type  = "VirtualAppliance"
     next_hop_in_ip_address = azurerm_firewall.privatelink-firewall-2.ip_configuration[0].private_ip_address
   }
+      route {
+    name           = "route5"
+    address_prefix = "192.168.200.132/32"
+    next_hop_type  = "VirtualAppliance"
+    next_hop_in_ip_address = azurerm_firewall.privatelink-firewall-2.ip_configuration[0].private_ip_address
+  }
 
+    route {
+    name           = "route6"
+    address_prefix = "192.168.200.133/32"
+    next_hop_type  = "VirtualAppliance"
+    next_hop_in_ip_address = azurerm_firewall.privatelink-firewall-2.ip_configuration[0].private_ip_address
+  }
  tags = {
     environment = "pl-endpoint-source"
     deployment  = "terraform"
@@ -260,7 +272,7 @@ resource "azurerm_private_endpoint" "ple-2"{
   private_service_connection {
     name                           = "ple-2-privateserviceconnection"
     private_connection_resource_id = azurerm_storage_account.privatelink-blob-mdd.id
-    subresource_names              = "blob_secondary"
+    subresource_names              = ["blob"]
     is_manual_connection           = false
   }
 }
@@ -289,7 +301,7 @@ resource "azurerm_private_endpoint" "ple-4"{
   private_service_connection {
     name                           = "ple-4-privateserviceconnection"
     private_connection_resource_id = azurerm_storage_account.privatelink-blob-mdd.id
-    subresource_names              = "blob_secondary"
+    subresource_names              = ["blob"]
     is_manual_connection           = false
   }
 }
@@ -318,7 +330,7 @@ resource "azurerm_private_endpoint" "ple-6"{
   private_service_connection {
     name                           = "ple-6-privateserviceconnection"
     private_connection_resource_id = azurerm_storage_account.privatelink-blob-mdd.id
-    subresource_names              = "blob_secondary"
+    subresource_names              = ["blob"]
     is_manual_connection           = false
   }
 }
