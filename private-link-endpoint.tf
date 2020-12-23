@@ -309,7 +309,7 @@ resource "azurerm_private_endpoint" "ple-4"{
 ## Create Privatelink Endpoint ple-5
 #######################################################################
 resource "azurerm_private_endpoint" "ple-5"{
-  name                  = "ple-3"
+  name                  = "ple-5"
   location              = var.location-privatelink-endpoint
   resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
   subnet_id             = azurerm_subnet.ple-fw-only-subnet.id
@@ -323,7 +323,7 @@ resource "azurerm_private_endpoint" "ple-5"{
 ## Create Privatelink Endpoint ple-6
 #######################################################################
 resource "azurerm_private_endpoint" "ple-6"{
-  name                  = "ple-4"
+  name                  = "ple-6"
   location              = var.location-privatelink-endpoint
   resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
   subnet_id             = azurerm_subnet.ple-fw-only-subnet.id

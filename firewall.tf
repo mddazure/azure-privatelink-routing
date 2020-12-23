@@ -74,7 +74,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "privatelink-firewall-p
     rule {
         name        = "ple-allow"    
         source_addresses = ["192.168.0.0/25"]
-        destination_ports = ["0-64000"]
+        destination_ports = ["1-65535"]
         destination_addresses = ["192.168.0.128/27","192.168.100.128/27","192.168.200.128/27"]
         protocols = ["TCP","UDP"]
     } 

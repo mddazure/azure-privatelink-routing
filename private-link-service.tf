@@ -319,8 +319,14 @@ resource "azurerm_private_link_service" "plsrv-1" {
 #######################################################################
 ## Create Storage privatelink-blob
 #######################################################################
+resource "random_string" "st-acc"{
+  length = 12
+  special = false
+}
+
+
 resource "azurerm_storage_account" "privatelink-blob-mdd" {
-  name                = "privatelinkblobmdd"
+  name                = random_string.st-acc.result
   resource_group_name = azurerm_resource_group.privatelink-service-rg.name
 
   location                 = var.location-privatelink-service
