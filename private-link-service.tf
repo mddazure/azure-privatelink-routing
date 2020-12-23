@@ -42,9 +42,14 @@ resource "azurerm_nat_gateway" "natGW" {
   name                    = "natGW"
   location            = var.location-privatelink-service
   resource_group_name = azurerm_resource_group.privatelink-service-rg.name
-  public_ip_address_ids   = [azurerm_public_ip.natGW-pubip.id]
   sku_name                = "Standard"
 }
+resource "azurerm_nat_gateway_public_ip_association" "natGW-pubip-ass"{
+   name                 = "natGW-pubip-ass"
+   nat_gateway_id       = azurerm_nat_gateway.natGW.id
+   public_ip_address_id = azurerm_public_ip.natGW-pubip.id
+}
+
 #######################################################################
 ## Create Subnets - privatelink-service
 #######################################################################
