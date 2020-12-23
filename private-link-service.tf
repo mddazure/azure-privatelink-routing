@@ -29,6 +29,23 @@ resource "azurerm_virtual_network" "privatelink-service-vnet" {
   }
 }
 #######################################################################
+## Create NAT Gatewat natGW (outbound internet from vms behind lb)
+#######################################################################
+resource "azurerm_public_ip" "natGW-pubip" {
+  name                = "natGW-pubip"
+  location            = var.location-privatelink-service
+  resource_group_name = azurerm_resource_group.privatelink-service-rg.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+resource "azurerm_nat_gateway" "natGW" {
+  name                    = "natGW"
+  location            = var.location-privatelink-service
+  resource_group_name = azurerm_resource_group.privatelink-service-rg.name
+  public_ip_address_ids   = [azurerm_public_ip.natGW-pubip.id]
+  sku_name                = "Standard"
+}
+#######################################################################
 ## Create Subnets - privatelink-service
 #######################################################################
 resource "azurerm_subnet" "backend-subnet" {
@@ -36,6 +53,10 @@ resource "azurerm_subnet" "backend-subnet" {
   resource_group_name = azurerm_resource_group.privatelink-service-rg.name
   virtual_network_name = azurerm_virtual_network.privatelink-service-vnet.name
   address_prefixes       = ["172.16.1.0/25"]
+}
+resource "azurerm_subnet_nat_gateway_association" "natGW-backendsubnet" {
+  subnet_id      = azurerm_subnet.backend-subnet.id
+  nat_gateway_id = azurerm_nat_gateway.natGW.id
 }
 resource "azurerm_subnet" "pls-bastion-subnet" {
   name                 = "AzureBastionSubnet"
@@ -56,6 +77,8 @@ resource "azurerm_subnet" "nat-subnet" {
   address_prefixes       = ["172.16.1.176/28"]
   enforce_private_link_service_network_policies = true
 }
+
+
 #######################################################################
 ## Create Bastion bastion-pls
 #######################################################################
@@ -248,11 +271,11 @@ resource "azurerm_network_interface_backend_address_pool_association" "lb-1-back
   ip_configuration_name   = "backend-1-ipconfig"
   backend_address_pool_id = azurerm_lb_backend_address_pool.lb-1-bepool.id
 }
-resource "azurerm_network_interface_backend_address_pool_association" "lb-1-backend-2" {
-  network_interface_id    = azurerm_network_interface.backend-2-nic.id
-  ip_configuration_name   = "backend-2-ipconfig"
-  backend_address_pool_id = azurerm_lb_backend_address_pool.lb-1-bepool.id
-}
+#resource "azurerm_network_interface_backend_address_pool_association" "lb-1-backend-2" {
+#  network_interface_id    = azurerm_network_interface.backend-2-nic.id
+#  ip_configuration_name   = "backend-2-ipconfig"
+#  backend_address_pool_id = azurerm_lb_backend_address_pool.lb-1-bepool.id
+#}
 resource "azurerm_lb_rule" "lb-1-rule1" {
   resource_group_name   = azurerm_resource_group.privatelink-service-rg.name
   loadbalancer_id                = azurerm_lb.lb-1.id
