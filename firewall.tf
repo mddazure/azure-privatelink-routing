@@ -45,7 +45,7 @@ resource "azurerm_firewall" "privatelink-firewall-2" {
   ip_configuration {
     name                 = "fw-2-ipconfig"
     subnet_id            = azurerm_subnet.fw-2-ple-subnet.id
-    public_ip_address_id = azurerm_public_ip.fw-pubip.id
+    public_ip_address_id = azurerm_public_ip.fw-2-pubip.id
   }
   firewall_policy_id   =  azurerm_firewall_policy.privatelink-firewall-policy.id
    tags = {
@@ -74,7 +74,7 @@ resource "azurerm_firewall_policy_rule_collection_group" "privatelink-firewall-p
     rule {
         name        = "ple-allow"    
         source_addresses = ["192.168.0.0/25"]
-        destination_ports = ["*"]
+        destination_ports = ["0-65536"]
         destination_addresses = ["192.168.0.128/27","192.168.100.128/27","192.168.200.128/27"]
         protocols = ["TCP","UDP"]
     } 

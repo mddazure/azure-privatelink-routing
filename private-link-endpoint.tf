@@ -69,7 +69,7 @@ resource "azurerm_route_table" "udr-ple-via-fw" {
   }
 }
 #######################################################################
-## Create Subnets - privatelink-endpoint
+## Create Subnets - privatelink-endpoint-source
 #######################################################################
 resource "azurerm_subnet" "vm-subnet" {
   name                 = "vmSubnet"
@@ -85,20 +85,20 @@ resource "azurerm_subnet_route_table_association" "vm-subnet-via-fw" {
 resource "azurerm_subnet" "ple-bastion-subnet" {
   name                 = "AzureBastionSubnet"
  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
-  virtual_network_name = azurerm_virtual_network.privatelink-endpoint-vnet.name
+  virtual_network_name = azurerm_virtual_network.privatelink-endpoint-source-vnet.name
   address_prefixes       = ["192.168.0.160/27"]
 }
 resource "azurerm_subnet" "privatelink-endpoint-source-subnet" {
   name                 = "privatelink-endpoint-source-subnet"
  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
-  virtual_network_name = azurerm_virtual_network.privatelink-endpoint-vnet.name
+  virtual_network_name = azurerm_virtual_network.privatelink-endpoint-source-vnet.name
   address_prefixes       = ["192.168.0.128/27"]
   enforce_private_link_endpoint_network_policies = true
 }
 resource "azurerm_subnet" "fw-1-ple-subnet" {
   name                 = "AzureFirewallSubnet"
  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
-  virtual_network_name = azurerm_virtual_network.privatelink-endpoint-vnet.name
+  virtual_network_name = azurerm_virtual_network.privatelink-endpoint-source-vnet.name
   address_prefixes       = ["192.168.0.192/26"]
   enforce_private_link_endpoint_network_policies = true
 }
@@ -271,7 +271,7 @@ resource "azurerm_private_endpoint" "ple-3"{
   name                  = "ple-3"
   location              = var.location-privatelink-endpoint
   resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
-  subnet_id             = azurerm_subnet.privatelink-endpoint-fw-subnet.id
+  subnet_id             = azurerm_subnet.ple-fw-subnet.id
   private_service_connection {
     name                           = "ple-3-privateserviceconnection"
     private_connection_resource_id = azurerm_private_link_service.plsrv-1.id
@@ -285,7 +285,7 @@ resource "azurerm_private_endpoint" "ple-4"{
   name                  = "ple-4"
   location              = var.location-privatelink-endpoint
   resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
-  subnet_id             = azurerm_subnet.privatelink-endpoint-fw-subnet.id
+  subnet_id             = azurerm_subnet.ple-fw-subnet.id
   private_service_connection {
     name                           = "ple-4-privateserviceconnection"
     private_connection_resource_id = azurerm_storage_account.privatelink-blob-mdd.id
@@ -300,7 +300,7 @@ resource "azurerm_private_endpoint" "ple-5"{
   name                  = "ple-3"
   location              = var.location-privatelink-endpoint
   resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
-  subnet_id             = azurerm_subnet.privatelink-endpoint-only-subnet.id
+  subnet_id             = azurerm_subnet.ple-fw-only-subnet.id
   private_service_connection {
     name                           = "ple-5-privateserviceconnection"
     private_connection_resource_id = azurerm_private_link_service.plsrv-1.id
@@ -314,7 +314,7 @@ resource "azurerm_private_endpoint" "ple-6"{
   name                  = "ple-4"
   location              = var.location-privatelink-endpoint
   resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
-  subnet_id             = azurerm_subnet.privatelink-endpoint-only-subnet.id
+  subnet_id             = azurerm_subnet.ple-fw-only-subnet.id
   private_service_connection {
     name                           = "ple-6-privateserviceconnection"
     private_connection_resource_id = azurerm_storage_account.privatelink-blob-mdd.id
