@@ -153,12 +153,14 @@ resource "azurerm_windows_virtual_machine" "backend-1-vm" {
   admin_password = var.password
   provision_vm_agent = true
 
-  source_image_reference {
-    offer     = "WindowsServer"
-    publisher = "MicrosoftWindowsServer"
-    sku       = "2019-Datacenter"
-    version   = "latest"
-  }
+  source_image_id = "/subscriptions/0245be41-c89b-4b46-a3cc-a705c90cd1e8/resourceGroups/image-gallery-rg/providers/Microsoft.Compute/galleries/mddimagegallery/images/windows2019-networktools/versions/1.0.0"
+
+  #source_image_reference {
+  #  offer     = "WindowsServer"
+  #  publisher = "MicrosoftWindowsServer"
+  #  sku       = "2019-Datacenter"
+  #  version   = "latest"
+  #}
 
   os_disk {
     name              = "backend-1-osdisk"
@@ -186,12 +188,14 @@ resource "azurerm_windows_virtual_machine" "backend-2-vm" {
   admin_password = var.password
   provision_vm_agent = true
 
-  source_image_reference {
-    offer     = "WindowsServer"
-    publisher = "MicrosoftWindowsServer"
-    sku       = "2019-Datacenter"
-    version   = "latest"
-  }
+  source_image_id = "/subscriptions/0245be41-c89b-4b46-a3cc-a705c90cd1e8/resourceGroups/image-gallery-rg/providers/Microsoft.Compute/galleries/mddimagegallery/images/windows2019-networktools/versions/1.0.0"
+
+  #source_image_reference {
+  #  offer     = "WindowsServer"
+  #  publisher = "MicrosoftWindowsServer"
+  #  sku       = "2019-Datacenter"
+  #  version   = "latest"
+  #}
 
   os_disk {
     name              = "backend-2-osdisk"
