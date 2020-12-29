@@ -118,7 +118,7 @@ resource "azurerm_virtual_machine_extension" "install-iis-backend-1-vm" {
 
    settings = <<SETTINGS
     {
-        "commandToExecute":"powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path \"C:\\inetpub\\wwwroot\\Default.htm\" -Value $($env:computername)"
+        "commandToExecute":"powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path \"C:\\inetpub\\wwwroot\\Default.htm\" -Value $($env:computername); powershell -ExecutionPolicy Unrestricted setx /M PATH \"$($env:path);C:\\Program Files\\iperf3;C:\\Program Files\\PSTools\""
     }
 SETTINGS
 }
@@ -135,7 +135,7 @@ resource "azurerm_virtual_machine_extension" "install-iis-backend-2-vm" {
 
    settings = <<SETTINGS
     {
-        "commandToExecute":"powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path \"C:\\inetpub\\wwwroot\\Default.htm\" -Value $($env:computername); powershell -ExecutionPolicy Unrestricted setx /M PATH \"$($env:path);C:\Program Files\iperf3;C:\Program Files\PSTools\""
+        "commandToExecute":"powershell -ExecutionPolicy Unrestricted Add-WindowsFeature Web-Server; powershell -ExecutionPolicy Unrestricted Add-Content -Path \"C:\\inetpub\\wwwroot\\Default.htm\" -Value $($env:computername); powershell -ExecutionPolicy Unrestricted setx /M PATH \"$($env:path);C:\\Program Files\\iperf3;C:\\Program Files\\PSTools\""
     }
 SETTINGS
 }
