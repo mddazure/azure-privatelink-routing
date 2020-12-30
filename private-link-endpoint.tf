@@ -228,6 +228,62 @@ resource "azurerm_windows_virtual_machine" "client-1-vm" {
   }
 }
 #######################################################################
+## Create Network Interface - client-2-nic
+#######################################################################
+resource "azurerm_network_interface" "client-2-nic" {
+  name                 = "client-2-nic"
+  location             = var.location-privatelink-endpoint
+  resource_group_name  = azurerm_resource_group.privatelink-endpoint-rg.name
+  enable_ip_forwarding = false
+
+  ip_configuration {
+    name                          = "client-2-ipconfig"
+    subnet_id                     = azurerm_subnet.privatelink-endpoint-source-subnet.id
+    private_ip_address_allocation = "Dynamic"
+  }
+
+  tags = {
+    environment = "pl-endpoint"
+    deployment  = "terraform"
+    microhack   = "privatelink-routing"
+  }
+}
+#######################################################################
+## Create Virtual Machine client-2-vm
+#######################################################################
+resource "azurerm_windows_virtual_machine" "client-2-vm" {
+  name                  = "client-2-vm"
+  location              = var.location-privatelink-endpoint
+  resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
+  network_interface_ids = [azurerm_network_interface.client-2-nic.id]
+  size               = var.vmsize
+  computer_name  = "client-2-vm"
+  admin_username = var.username
+  admin_password = var.password
+  provision_vm_agent = true
+
+  source_image_id = "/subscriptions/0245be41-c89b-4b46-a3cc-a705c90cd1e8/resourceGroups/image-gallery-rg/providers/Microsoft.Compute/galleries/mddimagegallery/images/windows2019-networktools/versions/2.0.0"
+
+  #source_image_reference {
+  #  offer     = "WindowsServer"
+  #  publisher = "MicrosoftWindowsServer"
+  #  sku       = "2019-Datacenter"
+  #  version   = "latest"
+  #}
+
+  os_disk {
+    name              = "client-2-osdisk"
+    caching           = "ReadWrite"
+    storage_account_type = "StandardSSD_LRS"
+  }
+  
+  tags = {
+    environment = "pl-endpoint"
+    deployment  = "terraform"
+    microhack   = "privatelink-routing"
+  }
+}
+#######################################################################
 ## Create Bastion bastion-ple
 #######################################################################
 resource "azurerm_public_ip" "bastion-ple-pubip" {
