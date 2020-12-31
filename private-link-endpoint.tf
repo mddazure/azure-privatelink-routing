@@ -76,7 +76,7 @@ resource "azurerm_route_table" "udr-ple-via-fw" {
   }
     route {
     name           = "route7"
-    address_prefix = "192.168.200.133/32"
+    address_prefix = "192.168.0.133/32"
     next_hop_type  = "VirtualAppliance"
     next_hop_in_ip_address = azurerm_network_interface.client-2-nic.ip_configuration[0].private_ip_address
   }
