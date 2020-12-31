@@ -234,7 +234,7 @@ resource "azurerm_network_interface" "client-2-nic" {
   name                 = "client-2-nic"
   location             = var.location-privatelink-endpoint
   resource_group_name  = azurerm_resource_group.privatelink-endpoint-rg.name
-  enable_ip_forwarding = false
+  enable_ip_forwarding = true
 
   ip_configuration {
     name                          = "client-2-ipconfig"
