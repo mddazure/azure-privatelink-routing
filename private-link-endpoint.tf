@@ -74,6 +74,13 @@ resource "azurerm_route_table" "udr-ple-via-fw" {
     next_hop_type  = "VirtualAppliance"
     next_hop_in_ip_address = azurerm_firewall.privatelink-firewall-2.ip_configuration[0].private_ip_address
   }
+    route {
+    name           = "route7"
+    address_prefix = "192.168.200.133/32"
+    next_hop_type  = "VirtualAppliance"
+    next_hop_in_ip_address = azurerm_network_interface.client-2-nic.ip_configuration[0].private_ip_address
+  }
+
  tags = {
     environment = "pl-endpoint-source"
     deployment  = "terraform"
