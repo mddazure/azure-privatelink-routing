@@ -229,27 +229,6 @@ resource "azurerm_windows_virtual_machine" "client-1-vm" {
   }
 }
 #######################################################################
-## Create Network Interface - client-2-nic
-#######################################################################
-resource "azurerm_network_interface" "client-2-nic" {
-  name                 = "client-2-nic"
-  location             = var.location-privatelink-endpoint
-  resource_group_name  = azurerm_resource_group.privatelink-endpoint-rg.name
-  enable_ip_forwarding = true
-
-  ip_configuration {
-    name                          = "client-2-ipconfig"
-    subnet_id                     = azurerm_subnet.privatelink-endpoint-source-subnet.id
-    private_ip_address_allocation = "Dynamic"
-  }
-
-  tags = {
-    environment = "pl-endpoint"
-    deployment  = "terraform"
-    microhack   = "privatelink-routing"
-  }
-}
-#######################################################################
 ## Create Bastion bastion-ple
 #######################################################################
 resource "azurerm_public_ip" "bastion-ple-pubip" {
