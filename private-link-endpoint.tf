@@ -39,40 +39,40 @@ resource "azurerm_route_table" "udr-ple-via-fw" {
     name           = "route1"
     address_prefix = "192.168.0.132/32"
     next_hop_type  = "VirtualAppliance"
-    next_hop_in_ip_address = azurerm_network_interface.client-2-nic.ip_configuration[0].private_ip_address
+    next_hop_in_ip_address = azurerm_network_interface.nva-1-nic.ip_configuration[0].private_ip_address
   }
 
     route {
     name           = "route2"
     address_prefix = "192.168.0.133/32"
     next_hop_type  = "VirtualAppliance"
-    next_hop_in_ip_address = azurerm_network_interface.client-2-nic.ip_configuration[0].private_ip_address
+    next_hop_in_ip_address = azurerm_network_interface.nva-1-nic.ip_configuration[0].private_ip_address
   }
     route {
     name           = "route3"
     address_prefix = "192.168.100.132/32"
     next_hop_type  = "VirtualAppliance"
-    next_hop_in_ip_address = azurerm_firewall.privatelink-firewall-2.ip_configuration[0].private_ip_address
+    next_hop_in_ip_address = azurerm_network_interface.nva-2-nic.ip_configuration[0].private_ip_address
   }
 
     route {
     name           = "route4"
     address_prefix = "192.168.100.133/32"
     next_hop_type  = "VirtualAppliance"
-    next_hop_in_ip_address = azurerm_firewall.privatelink-firewall-2.ip_configuration[0].private_ip_address
+    next_hop_in_ip_address = azurerm_network_interface.nva-2-nic.ip_configuration[0].private_ip_address
   }
       route {
     name           = "route5"
     address_prefix = "192.168.200.132/32"
     next_hop_type  = "VirtualAppliance"
-    next_hop_in_ip_address = azurerm_firewall.privatelink-firewall-2.ip_configuration[0].private_ip_address
+    next_hop_in_ip_address = azurerm_network_interface.nva-2-nic.ip_configuration[0].private_ip_address
   }
 
     route {
     name           = "route6"
     address_prefix = "192.168.200.133/32"
     next_hop_type  = "VirtualAppliance"
-    next_hop_in_ip_address = azurerm_firewall.privatelink-firewall-2.ip_configuration[0].private_ip_address
+    next_hop_in_ip_address = azurerm_network_interface.nva-2-nic.ip_configuration[0].private_ip_address
     }
 
  tags = {
@@ -250,41 +250,6 @@ resource "azurerm_network_interface" "client-2-nic" {
   }
 }
 #######################################################################
-## Create Virtual Machine client-2-vm
-#######################################################################
-resource "azurerm_windows_virtual_machine" "client-2-vm" {
-  name                  = "client-2-vm"
-  location              = var.location-privatelink-endpoint
-  resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
-  network_interface_ids = [azurerm_network_interface.client-2-nic.id]
-  size               = var.vmsize
-  computer_name  = "client-2-vm"
-  admin_username = var.username
-  admin_password = var.password
-  provision_vm_agent = true
-
-  source_image_id = "/subscriptions/0245be41-c89b-4b46-a3cc-a705c90cd1e8/resourceGroups/image-gallery-rg/providers/Microsoft.Compute/galleries/mddimagegallery/images/windows2019-networktools/versions/2.0.0"
-
-  #source_image_reference {
-  #  offer     = "WindowsServer"
-  #  publisher = "MicrosoftWindowsServer"
-  #  sku       = "2019-Datacenter"
-  #  version   = "latest"
-  #}
-
-  os_disk {
-    name              = "client-2-osdisk"
-    caching           = "ReadWrite"
-    storage_account_type = "StandardSSD_LRS"
-  }
-  
-  tags = {
-    environment = "pl-endpoint"
-    deployment  = "terraform"
-    microhack   = "privatelink-routing"
-  }
-}
-#######################################################################
 ## Create Bastion bastion-ple
 #######################################################################
 resource "azurerm_public_ip" "bastion-ple-pubip" {
@@ -426,5 +391,23 @@ resource "azurerm_virtual_network_peering" "fw-only-peer" {
   resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
   virtual_network_name      = azurerm_virtual_network.privatelink-endpoint-fw-vnet.name
   remote_virtual_network_id = azurerm_virtual_network.privatelink-endpoint-only-vnet.id
+  allow_forwarded_traffic = true
+}
+#######################################################################
+## Peer source-vnet ple-only-vnet
+#######################################################################
+resource "azurerm_virtual_network_peering" "source-fw-peer" {
+  name                      = "source-fw-peer"
+  resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
+  virtual_network_name      = azurerm_virtual_network.privatelink-endpoint-source-vnet.name
+  remote_virtual_network_id = azurerm_virtual_network.privatelink-endpoint-only-vnet.id
+  allow_forwarded_traffic = true
+}
+
+resource "azurerm_virtual_network_peering" "fw-source-peer" {
+  name                      = "fw-source-peer"
+  resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
+  virtual_network_name      = azurerm_virtual_network.privatelink-endpoint-only-vnet.name
+  remote_virtual_network_id = azurerm_virtual_network.privatelink-endpoint-source-vnet.id
   allow_forwarded_traffic = true
 }
