@@ -109,7 +109,7 @@ resource "azurerm_subnet" "privatelink-endpoint-source-subnet" {
   enforce_private_link_endpoint_network_policies = true
 }
 resource "azurerm_subnet" "fw-1-ple-subnet" {
-  name                 = "AzureFirewallSubnet"
+  name                 = "fw-1-ple-subnet"
  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
   virtual_network_name = azurerm_virtual_network.privatelink-endpoint-source-vnet.name
   address_prefixes       = ["192.168.0.192/26"]
@@ -141,7 +141,7 @@ resource "azurerm_subnet" "ple-fw-subnet" {
   enforce_private_link_endpoint_network_policies = true
 }
 resource "azurerm_subnet" "fw-2-ple-subnet" {
-  name                 = "AzureFirewallSubnet"
+  name                 = "fw-2-ple-subnet"
  resource_group_name = azurerm_resource_group.privatelink-endpoint-rg.name
   virtual_network_name = azurerm_virtual_network.privatelink-endpoint-fw-vnet.name
   address_prefixes       = ["192.168.100.192/26"]
