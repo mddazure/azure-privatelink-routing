@@ -295,6 +295,28 @@ resource "azurerm_lb_rule" "lb-1-rule1" {
   backend_address_pool_id        = azurerm_lb_backend_address_pool.lb-1-bepool.id
   probe_id                       = azurerm_lb_probe.lb-1-probe.id
 }
+resource "azurerm_lb_rule" "lb-1-rule2" {
+  resource_group_name   = azurerm_resource_group.privatelink-service-rg.name
+  loadbalancer_id                = azurerm_lb.lb-1.id
+  name                           = "lb-1-rule2"
+  protocol                       = "Tcp"
+  frontend_port                  = 5201
+  backend_port                   = 5201
+  frontend_ip_configuration_name = "lb-1-frontend-ipconfig"
+  backend_address_pool_id        = azurerm_lb_backend_address_pool.lb-1-bepool.id
+  probe_id                       = azurerm_lb_probe.lb-1-probe.id
+}
+resource "azurerm_lb_rule" "lb-1-rule3" {
+  resource_group_name   = azurerm_resource_group.privatelink-service-rg.name
+  loadbalancer_id                = azurerm_lb.lb-1.id
+  name                           = "lb-1-rule3"
+  protocol                       = "Udp"
+  frontend_port                  = 5201
+  backend_port                   = 5201
+  frontend_ip_configuration_name = "lb-1-frontend-ipconfig"
+  backend_address_pool_id        = azurerm_lb_backend_address_pool.lb-1-bepool.id
+  probe_id                       = azurerm_lb_probe.lb-1-probe.id
+}
 resource "azurerm_lb_probe" "lb-1-probe" {
   resource_group_name   = azurerm_resource_group.privatelink-service-rg.name
   loadbalancer_id     = azurerm_lb.lb-1.id
