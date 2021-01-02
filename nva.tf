@@ -46,7 +46,7 @@ resource "azurerm_windows_virtual_machine" "nva-1-vm" {
   name                  = "nva-1-vm"
   location              = var.location-privatelink-endpoint
   resource_group_name   = azurerm_resource_group.privatelink-endpoint-rg.name
-  network_interface_ids = [azurerm_network_interface.nva-2-nic.id]
+  network_interface_ids = [azurerm_network_interface.nva-1-nic.id]
   size               = var.vmsize
   computer_name  = "nva-1-vm"
   admin_username = var.username
@@ -122,7 +122,7 @@ resource "azurerm_virtual_machine_extension" "enable-routing-nva-1-vm" {
 
    settings = <<SETTINGS
     {
-        "commandToExecute":"powershell -ExecutionPolicy Unrestricted Set-NetIPInterface -Forwarding Enabled; powershell -ExecutionPolicy Unrestricted Set-NetfirewallRule -Name FPS-ICMP6-ERQ-In -Enable True -Profile Any"
+        "commandToExecute":"powershell -ExecutionPolicy Unrestricted Set-NetIPInterface -Forwarding Enabled; powershell -ExecutionPolicy Unrestricted Set-NetfirewallRule -Name FPS-ICMP4-ERQ-In -Enable True -Profile Any"
     }
 SETTINGS
 }
@@ -139,7 +139,7 @@ resource "azurerm_virtual_machine_extension" "enable-routing-nva-2-vm" {
 
    settings = <<SETTINGS
     {
-        "commandToExecute":"powershell -ExecutionPolicy Unrestricted Set-NetIPInterface -Forwarding Enabled; powershell -ExecutionPolicy Unrestricted Set-NetfirewallRule -Name FPS-ICMP6-ERQ-In -Enable True -Profile Any"
+        "commandToExecute":"powershell -ExecutionPolicy Unrestricted Set-NetIPInterface -Forwarding Enabled; powershell -ExecutionPolicy Unrestricted Set-NetfirewallRule -Name FPS-ICMP4-ERQ-In -Enable True -Profile Any"
     }
 SETTINGS
 }
