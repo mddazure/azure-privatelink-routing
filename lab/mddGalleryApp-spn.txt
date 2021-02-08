@@ -1,0 +1,25 @@
+Object ID:
+8117d396-2edf-490c-8853-9ca0bbb4f812
+
+Application (client) ID:
+e5003543-73ee-4e26-ba1d-b68d4e9111ad
+
+Secret id:
+b935a954-0a1b-4a8a-a6e1-5997847df066
+Secret value:
+RRi5z29W2qKnz_~-O2eF-J.Ff55ZH5jy5_
+
+
+https://login.microsoftonline.com/904d2a8f-3d0d-4377-9c2e-f255c680a158/oauth2/authorize?client_id=e5003543-73ee-4e26-ba1d-b68d4e9111ad&response_type=code&redirect_uri=https%3A%2F%2Fwww.microsoft.com%2F
+
+copy disk to vhd in page blob
+
+marc@Azure:~$ az storage blob copy start -b imagevhdblob.vhd -c imagevhd --source-uri "https://md-ssd-lchxx20bfrlh.blob.core.windows.net/nshxwffkcssp/abcd?sv=2018-03-28&sr=b&si=e866b806-3087-48de-a407-8cb68153a450&sig=oetyYDOzAXpE5pk8ND7oBfDD2sc%2FBgK%2FC9jSOqIq5l4%3D" --account-name imagevhdmdd --account-key paUTf+QaGiKQX1bRpLPbJY+M8vzZtlE12SxXJ4uK7GpHLfi5dl0cyCVZn6pZk6UB3Mc75OmtXEeNLbp4UVBXfg==
+{
+  "completionTime": null,
+  "id": "0da27926-418d-4d5a-ad36-9bcfa83279ce",
+  "progress": null,
+  "source": null,
+  "status": "pending",
+  "statusDescription": null
+}
