@@ -12,7 +12,7 @@ A topology defines how a client VM, NVA and PE are arranged over VNETs. This art
 The target resource in each topology is [Private Link Service](https://docs.microsoft.com/en-us/azure/private-link/private-link-service-overview), consisting of a VM behind a load balancer in a separate VNET. Reason for targeting Private Link Service rather than PaaS services is that it allows us to inspect traffic received inbound from the Private Endpoint. Findings described below do also apply to Private Endpoint connections to PaaS services and the lab with this articles includes Private Endpoint connections to PaaS.
 
 ## Topology #1: Single VNET
-### Client VM, NVA and PE hosted in same VNET, each on a separate subnet.
+**Client VM, NVA and PE hosted in same VNET, each on a separate subnet.**
 
 ![image](images/topology1.png)
 
@@ -21,10 +21,10 @@ Findings:
 - Traffic sourced from the client VM destined for the PE, enters and exits the NVA VM but **never reaches the backend VM**. This is confirmed by observing traffic with Wireshark on the NVA and backend VM's.
 - Traces from the Virtual Filter Platform (VFP) on the NVA's host machine, show the packet on the *outbound path* from the NVA VM through VFP hits a "BLOCK_ALL" rule. VFP on the NVA host silently discards the packet.
 
-### :point_right: This topology does **not** work
+:point_right: **This topology does not work**
 
 ## Topology #2
-### Client VM, NVA and PE each hosted in separate VNETs, daisy-chained with VNET peers.
+**Client VM, NVA and PE each hosted in separate VNETs, daisy-chained with VNET peering**
 
 ![image](images/topology2.png)
 
@@ -34,10 +34,10 @@ Findings:
 - Return traffic makes it back to the client VM via the NVA.
 - Routing to and from the PE via the NVA is symmetrical without requiring a UDR on the PE (a UDR on the PE subnet would be ignored anyway as PE does not support UDR).
 
-### :point_right: This topology works
+:point_right: **This topology works**
 
 ## Topology #3
-### Client VM and PE in the same VNET, NVA in peered side VNET
+**Client VM and PE in the same VNET, NVA in peered side VNET**
 
 ![image](images/topology3.png)
 
@@ -47,10 +47,10 @@ Findings:
 - Return traffic makes it back to the client VM via the NVA.
 - Routing to and from the PE via the NVA is symmetrical without requiring a UDR on the PE.
 
-### :point_right: This topology works  
+:point_right: **This topology works**
 
 ## Topology #4
-### Client VM and NVA in the same VNET, PE in peered VNET
+**Client VM and NVA in the same VNET, PE in peered VNET**
 
 ![image](images/topology4.png)
 
@@ -59,10 +59,10 @@ Findings:
 - Traffic sourced from the client VM destined for the PE, enters and exits the NVA VM but **never reaches the backend VM**. This is confirmed by observing traffic with Wireshark on the NVA and backend VM's.
 - As in topology #1, traces from Virtual Filter Platform (VFP) on the NVA's host machine show that the packet on the *outbound path* from the NVA VM through VFP hits a "BLOCK_ALL" rule. VFP on the NVA host silently discards the packet.
 
-### :point_right: This topology does **not** work
+:point_right: T**his topology does not work**
 
 ## Topology #5
-### NVA and PE in the same VNET, client VM in peered VNET
+**NVA and PE in the same VNET, client VM in peered VNET**
 
 ![image](images/topology5.png)
 
@@ -72,12 +72,33 @@ Findings:
 - Return traffic makes it back to the client VM via the NVA.
 - Routing to and from the PE via the NVA is symmetrical without requiring a UDR on the PE.
 
-### :point_right: This topology works  
+:point_right: **This topology works**  
 
-## Note on VNET Gateway connections
+## VNET Gateway connections
+
+## Topology #6
+**ExpressRoute connection - VNET Gateway, NVA and PE in the same VNET**
+
+![image](images/topology6.png)
+
+:point_right: **This topology works**  
 
 
-# Lab
+## Topology 7
+**Site-to-site VPN connection - VNET Gateway, NVA and PE in the same VNET**
+
+![image](images/topology7.png)
+
+:point_right: **This topology does not work**  
+
+## Topology 8
+**Site-to-site VPN connection - VNET Gateway, NVA and PE each hosted in separate VNETs, daisy-chained with VNET peering**
+
+![image](images/topology8.png)
+
+:point_right: **This topology works**
+
+## Lab
 
 
 ![image](images/azure-privatelink-routing.png)
