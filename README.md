@@ -6,6 +6,8 @@ It may be necessary to inspect and control network traffic to PEs, for technical
 
 Inspecting PE traffic with Azure Firewall is addressed in documentation [here](https://docs.microsoft.com/en-us/azure/private-link/inspect-traffic-with-azure-firewall). This article builds on that documentation and further explores inspecting PE traffic through an NVA, as this is a complicated subject not documented elsewhere.
 
+The NVA in the topologies explored here does **not** implement Source NAT or forward proxy ("application rule") functionality. 
+
 # Topologies
 A topology defines how a client VM, NVA and PE are arranged over VNETs. This article investigates 8 topologies.
 
@@ -99,7 +101,58 @@ Findings:
 :point_right: **This topology works**
 
 ## Lab
-
+This lab was used to test the topologies. Terraform files are contained in the Lab folder.
 
 ![image](images/azure-privatelink-routing.png)
+
+Enable [Routing and Remote Access Services](https://protechgurus.com/configure-lan-routing-windows-server-2016/) on nva-1-vm and nva-2-vm, disable Windows Defender Firewall in Server Manager.
+
+*Topology 1:*
+1)  From client-1-vm, access ple-1 (192.168.0.132) or ple-2 (192.168.0.133).
+2)  Route 1 and Route 2 direct traffic outbound from client-1-vm to nva-1-vm.
+
+
+*Topology 2:*
+1)  From client-1-vm, access ple-5 (192.168.200.132) or ple-6 (192.168.200.133).
+2)  Route 5 and Route 6 direct traffic outbound from client-1-vm via peering 1 to nva-2-vm.
+3)  Traffic flows to ple-5 and ple-6 in privatelink-only-vnet via peering 2.
+
+*Topology 3:*
+1)  Modify Route 1 and Route 2 to direct traffic for ple-1 and ple-2 to nva-2-vm at 192.168.100.196.
+2)  From client-1-vm, access ple-1 or ple-2.
+3)  Route 1 and Route 2 direct traffic outbound from client-1-vm via peering 1 to nva-2-vm.
+4)  Traffic flows to nva-2-vm and back to ple-1 and ple-2 in via peering 1.
+
+*Topology 4:*
+1)  Modify Route 5 and Route 6 to direct traffic for ple-5 and ple-6 to nva-1-vm at 192.168.0.196.
+2)  From client-1-vm, access ple-5 or ple-6.
+3)  Route 5 and Route 6 direct traffic outbound from client-1-vm to nva-1-vm.
+4)  Traffic flows from nva-1-vm to ple-5 or ple-6 via peering 3.
+
+*Topology 5:*
+
+1)  From client-1-vm, access ple-3 (192.168.100.132) or ple-6 (192.168.100.132).
+2)  Route 3 and Route 4 direct traffic outbound from client-1-vm to nva-2-vm via peering 1.
+3)  Traffic flows from nva-2-vm to ple-3 or ple-4 in the same VNET as nva-2-vm.
+
+*Topology 6:*
+Not tested in this lab, requires ExpressRoute.
+
+*Topology 7:*
+
+1)  Attach route table udr-ple-via-fw to the GatewaySubnet.
+2)  Modify Route 1 and Route 2 to direct traffic for ple-1 and ple-2 to nva-1-vm at 192.168.0.196.
+3)  Connect a laptop to the P2S VPN Gateway.
+4)  Access ple-1 (192.168.0.132) or ple-2 (192.168.0.132).
+5)  Route 1 and Route 2 direct traffic outbound from P2S Gateway to nva-1-vm.
+   
+*Topology 8:*
+
+1)  Attach route table udr-ple-via-fw to the GatewaySubnet.
+2)  Connect a laptop to the P2S VPN Gateway.
+3)  Route 5 and Route 6 direct traffic outbound from P2S Gateway via peering 1 to nva-2-vm.
+4)  Traffic flows to ple-5 and ple-6 in privatelink-only-vnet via peering 2.
+
+
+
 
