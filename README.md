@@ -6,12 +6,13 @@ It may be necessary to inspect and control network traffic to PEs, for technical
 
 Inspecting PE traffic with Azure Firewall is addressed in documentation [here](https://docs.microsoft.com/en-us/azure/private-link/inspect-traffic-with-azure-firewall). This article builds on that documentation and further explores inspecting PE traffic through an NVA, as this is a complicated subject not documented elsewhere.
 
-The NVA in the topologies explored here does **not** implement Source NAT or forward proxy ("application rule") functionality. 
 
 # Topologies
 A topology defines how a client VM, NVA and PE are arranged over VNETs. This article investigates 8 topologies.
 
 The target resource in each topology is [Private Link Service](https://docs.microsoft.com/en-us/azure/private-link/private-link-service-overview), consisting of a VM behind a load balancer in a separate VNET. Reason for targeting Private Link Service rather than PaaS services is that it allows us to inspect traffic received inbound from the Private Endpoint. Findings described below do also apply to Private Endpoint connections to PaaS services and the lab with this articles includes Private Endpoint connections to PaaS.
+
+:raised_hand: The topologies explored below do **not** rely on a User Defined Route forcing return traffic from the PE through the NVA, to maintain flow symmetry. Experimentation with the topologies below demonstrates that return traffic flows back to the NVA automatically, although this is counter-intuitive. A UDR attached to the PE subnet is ignored by traffic out of the PE. The NVA does **not** implement Source NAT or forward proxy ("application rule") functionality. 
 
 ## Topology #1: Single VNET
 **Client VM, NVA and PE hosted in same VNET, each on a separate subnet.**
