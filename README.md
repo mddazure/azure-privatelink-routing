@@ -12,7 +12,10 @@ A topology defines how a client VM, NVA and PE are arranged over VNETs. This art
 
 The target resource in each topology is [Private Link Service](https://docs.microsoft.com/en-us/azure/private-link/private-link-service-overview), consisting of a VM behind a load balancer in a separate VNET. Reason for targeting Private Link Service rather than PaaS services is that it allows us to inspect traffic received inbound from the Private Endpoint. Findings described below do also apply to Private Endpoint connections to PaaS services and the lab with this articles includes Private Endpoint connections to PaaS.
 
-:raised_hand: The topologies explored below do **not** rely on a User Defined Route forcing return traffic from the PE through the NVA, to maintain flow symmetry. Experimentation with the topologies below demonstrates that return traffic flows back to the NVA automatically, although this is counter-intuitive. A UDR attached to the PE subnet is ignored by traffic out of the PE. The NVA does **not** implement Source NAT or forward proxy ("application rule") functionality. 
+:raised_hand: The topologies explored below do **not** rely on a User Defined Route forcing return traffic from the PE through the NVA, to maintain flow symmetry. Monitoring of traffic flows with Wireshark on the NVA shows that return traffic flows back to the NVA automatically, although this is counter-intuitive. 
+A UDR attached to the PE subnet would be ignored by traffic out of the PE anyway, as Private Link does not support UDRs yet.
+
+:raised_hand: The NVA in these topologies does **not** implement Source NAT or forward proxy ("application rule") functionality. 
 
 ## Topology #1: Single VNET
 **Client VM, NVA and PE hosted in same VNET, each on a separate subnet.**
